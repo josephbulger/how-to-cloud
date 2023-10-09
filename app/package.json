@@ -1,0 +1,17 @@
+{
+  "name": "how-to-cloud-app",
+  "version": "1.0.0",
+  "repository": "git@github.com:josephbulger/how-to-cloud.git",
+  "engines": {
+    "npm": ">=8.0.0",
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "start": "node hello.js"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    
+  }
+}
