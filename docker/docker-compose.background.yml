@@ -4,4 +4,4 @@ services:
     build: 
       context: ../
       dockerfile: ./docker/Dockerfile.background
-    image: how-to-cloud:background    
+    image: how-to-cloud-background:latest

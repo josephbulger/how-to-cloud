@@ -4,4 +4,4 @@ services:
     build: 
       context: ../
       dockerfile: ./docker/Dockerfile.web
-    image: how-to-cloud:web    
+    image: how-to-cloud-web:latest
