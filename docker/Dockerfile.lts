@@ -1,6 +1,6 @@
 FROM how-to-cloud:base
 
-COPY ./web /app
+COPY ./lts /app
 
 WORKDIR /app
 

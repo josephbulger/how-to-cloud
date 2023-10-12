@@ -1,0 +1,8 @@
+version: "2"
+services:
+  how-to-cloud-lts:
+    build: 
+      context: ../
+      dockerfile: ./docker/Dockerfile.lts
+    image: how-to-cloud:lts  
+            

@@ -1,16 +1,7 @@
 version: "2"
 services:
-  how-to-cloud-app:
+  how-to-cloud-web:
     build: 
-      context: .
-      dockerfile: Dockerfile.web
-    image: how-to-cloud:app
-    user: "node"
-    working_dir: /home/node/app
-    environment:
-      - NODE_ENV=production
-    volumes:
-      - ../app:/home/node/app
-    expose:
-      - "8888"
-    command: "npm start"
+      context: ../
+      dockerfile: ./docker/Dockerfile.web
+    image: how-to-cloud:web    

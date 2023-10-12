@@ -1,1 +1,7 @@
 FROM how-to-cloud:base
+
+COPY ./background /app
+
+WORKDIR /app
+
+CMD npm start

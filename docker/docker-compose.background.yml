@@ -2,15 +2,6 @@ version: "2"
 services:
   how-to-cloud-background:
     build: 
-      context: .
-      dockerfile: Dockerfile.background
-    image: how-to-cloud:background
-    user: "node"
-    working_dir: /home/node/app
-    environment:
-      - NODE_ENV=production
-    volumes:
-      - ../app:/home/node/app
-    expose:
-      - "8888"
-    command: "npm start"
+      context: ../
+      dockerfile: ./docker/Dockerfile.background
+    image: how-to-cloud:background    

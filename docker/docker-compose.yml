@@ -2,13 +2,4 @@ version: "2"
 services:
   how-to-cloud-base:
     build: .
-    image: how-to-cloud:base
-    user: "node"
-    working_dir: /home/node/app
-    environment:
-      - NODE_ENV=production
-    volumes:
-      - ../app:/home/node/app
-    expose:
-      - "8888"
-    command: "npm start"
+    image: how-to-cloud:base    
