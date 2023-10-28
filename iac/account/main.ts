@@ -3,7 +3,7 @@ import { App, TerraformStack } from "cdktf";
 import { AwsProvider } from "@cdktf/provider-aws/lib/provider";
 import { DataAwsIamRole } from "@cdktf/provider-aws/lib/data-aws-iam-role";
 
-import { Vpc } from "./.gen/modules/terraform-aws-modules/aws/vpc";
+import { Vpc } from "./.gen/modules/vpc";
 
 import { State } from "./state";
 import { Ecr } from "./ecr";
