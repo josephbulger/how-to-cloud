@@ -1,0 +1,7 @@
+FROM how-to-cloud:base
+
+COPY ./lts /app
+
+WORKDIR /app
+
+CMD npm start

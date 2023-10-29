@@ -1,0 +1,5 @@
+version: "2"
+services:
+  how-to-cloud-base:
+    build: .
+    image: how-to-cloud:base    
