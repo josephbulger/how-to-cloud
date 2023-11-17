@@ -6,17 +6,23 @@ import { DataAwsIamPolicyDocument } from "@cdktf/provider-aws/lib/data-aws-iam-p
 import { DataAwsIamRole } from "@cdktf/provider-aws/lib/data-aws-iam-role";
 
 export class Ecr extends Construct {
+  public url: string;
+  public arn: string;
+
   constructor(scope: Construct, name: string, config: { role: DataAwsIamRole }) {
     super(scope, name);
 
-    const ecr = new EcrRepository(this, "htc-ecr", {
+    const ecr = new EcrRepository(this, "ecr", {
       name: name,
-      imageTagMutability: "MUTABLE",
+      imageTagMutability: "MUTABLE"
     });
 
-    const identity = new DataAwsCallerIdentity(this, "htc-identity", {});
+    this.url = ecr.repositoryUrl;
+    this.arn = ecr.arn;
 
-    const policy = new DataAwsIamPolicyDocument(this, "htc-state-policy", {
+    const identity = new DataAwsCallerIdentity(this, "identity", {});
+
+    const policy = new DataAwsIamPolicyDocument(this, "state-policy", {
       statement: [
         {
           actions: [
@@ -55,7 +61,7 @@ export class Ecr extends Construct {
       ],
     });
 
-    new EcrRepositoryPolicy(this, "htc-ecr-policy", {
+    new EcrRepositoryPolicy(this, "ecr-policy", {
       repository: ecr.name,
       policy: policy.json,
     });
