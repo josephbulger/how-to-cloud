@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: how-to-cloud-k8s-bg
+spec:
+  selector:
+    matchLabels:
+      app: htc-background-k8s
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: htc-background-k8s
+    spec:
+      containers:
+      - name: htc-background-k8s
+        image: how-to-cloud-background:latest
+        imagePullPolicy: Never
+        resources:
+          limits:
+            memory: 512Mi
+            cpu: "1"
+          requests:
+            memory: 256Mi
+            cpu: "0.2"     
+        ports:
+        - containerPort: 3000

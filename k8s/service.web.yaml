@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: how-to-cloud-k8s-web
+spec:
+  selector:
+    app: htc-web-k8s
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: LoadBalancer
+status:
+  loadBalancer:
+    ingress:
+    - ip: 0.0.0.0

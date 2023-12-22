@@ -5,3 +5,5 @@ services:
       context: ../
       dockerfile: ./docker/Dockerfile.background
     image: how-to-cloud-background:latest
+    ports:
+      - "3000:3000"
