@@ -12,8 +12,8 @@ export class Ecr extends Construct {
   constructor(scope: Construct, name: string, config: { role: DataAwsIamRole }) {
     super(scope, name);
 
-    const ecr = new EcrRepository(this, "ecr", {
-      name: name,
+    const ecr = new EcrRepository(this, `${name}-ecr`, {
+      name: `${name}-ecr`,
       imageTagMutability: "MUTABLE"
     });
 
@@ -22,7 +22,7 @@ export class Ecr extends Construct {
 
     const identity = new DataAwsCallerIdentity(this, "identity", {});
 
-    const policy = new DataAwsIamPolicyDocument(this, "state-policy", {
+    const policy = new DataAwsIamPolicyDocument(this, `${name}-state-policy`, {
       statement: [
         {
           actions: [
@@ -61,7 +61,7 @@ export class Ecr extends Construct {
       ],
     });
 
-    new EcrRepositoryPolicy(this, "ecr-policy", {
+    new EcrRepositoryPolicy(this, `${name}-ecr-policy`, {
       repository: ecr.name,
       policy: policy.json,
     });
