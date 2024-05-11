@@ -1,17 +1,16 @@
-import { Construct } from "constructs";
-import { TerraformStack } from "cdktf";
-import { IdentityCenterGroups } from "../identity-center/groups";
 import { AwsProvider } from "@cdktf/provider-aws/lib/provider";
+import { TerraformStack } from "cdktf";
+import { Construct } from "constructs";
+import { IdentityCenter } from "../identity-center";
 
 export class RootStack extends TerraformStack {
+  identityCenter: IdentityCenter;
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    const providerAsRoot = new AwsProvider(this, `${id}-provider`, {
-      profile: "root",
-    });
+    const providerAsRoot = new AwsProvider(this, `${id}-provider`);
 
-    new IdentityCenterGroups(this, `${id}-identity-center`, {
+    this.identityCenter = new IdentityCenter(this, `${id}-ic`, {
       provider: providerAsRoot,
       org: id,
     });

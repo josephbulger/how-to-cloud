@@ -1,32 +1,34 @@
-import { Construct } from "constructs";
-import { TerraformStack } from "cdktf";
 import { AwsProvider } from "@cdktf/provider-aws/lib/provider";
-import { DataAwsIamRole } from "@cdktf/provider-aws/lib/data-aws-iam-role";
-import { State } from "../state";
-import { Tfvars } from "../variables";
-import { Account } from "../account";
-import { HowToCloudFargateExample } from "../compute/fargate";
+import { Fn, TerraformStack } from "cdktf";
+import { Construct } from "constructs";
+import { DataAwsCallerIdentity } from "@cdktf/provider-aws/lib/data-aws-caller-identity";
+import { DataAwsSsoadminInstances } from "@cdktf/provider-aws/lib/data-aws-ssoadmin-instances";
+import { IdentityCenterAssignments } from "../identity-center/assignments";
+import { IdentityCenter } from "../identity-center";
 
-export class HowToCloudStack extends TerraformStack {
-  constructor(scope: Construct, name: string) {
-    super(scope, name);
+export class AccountStack extends TerraformStack {
+  constructor(
+    scope: Construct,
+    id: string,
+    config: { identityCenter: IdentityCenter }
+  ) {
+    super(scope, id);
 
-    const vars = new Tfvars(this, `${name}-vars`);
+    const provider = new AwsProvider(this, `${id}-provider`);
 
-    new AwsProvider(this, "AWS", {
-      region: vars.region,
-    });
+    const caller = new DataAwsCallerIdentity(this, `${id}-caller`);
 
-    const account = new Account(this, `${name}-account`, vars);
+    const stores = new DataAwsSsoadminInstances(this, `${id}-stores`);
 
-    new HowToCloudFargateExample(this, `${name}-fargate`, account.ecr);
+    const storeArn = Fn.element(stores.arns, 0);
+    const storeId = Fn.element(stores.identityStoreIds, 0);
 
-    const role = new DataAwsIamRole(this, `devops-role`, {
-      name: vars.role,
-    });
-
-    new State(this, `${name}-state`, {
-      role: role,
+    new IdentityCenterAssignments(this, `${id}-ica`, {
+      provider: provider,
+      storeArn: storeArn,
+      storeId: storeId,
+      caller: caller,
+      identityCenter: config.identityCenter,
     });
   }
 }
