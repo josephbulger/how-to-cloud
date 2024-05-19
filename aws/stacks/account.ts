@@ -5,12 +5,13 @@ import { DataAwsCallerIdentity } from "@cdktf/provider-aws/lib/data-aws-caller-i
 import { DataAwsSsoadminInstances } from "@cdktf/provider-aws/lib/data-aws-ssoadmin-instances";
 import { IdentityCenterAssignments } from "../identity-center/assignments";
 import { IdentityCenter } from "../identity-center";
+import { OIDCProvider } from "../iam/oidc";
 
 export class AccountStack extends TerraformStack {
   constructor(
     scope: Construct,
     id: string,
-    config: { identityCenter: IdentityCenter }
+    config: { identityCenter: IdentityCenter; githubOrg: string }
   ) {
     super(scope, id);
 
@@ -30,5 +31,7 @@ export class AccountStack extends TerraformStack {
       caller: caller,
       identityCenter: config.identityCenter,
     });
+
+    new OIDCProvider(this, `${id}-oidc`, config);
   }
 }
