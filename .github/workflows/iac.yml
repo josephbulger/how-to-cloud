@@ -15,6 +15,23 @@ jobs:
           role-to-assume: arn:aws:iam::851725448247:role/widget-factory-account-oidc-trust-role20240516012044860200000001
           role-session-name: githubsession
           aws-region: us-east-2
-      - name: Proof of Life
-        run: |
-          aws iam list-roles
+
+      - name: Deploy Account Stack
+        uses: hashicorp/terraform-cdk-action@v4
+        with:
+          cdktfVersion: 0.20.7
+          terraformVersion: 1.8.3
+          mode: auto-approve-apply
+          stackName: widget-factory-account
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          workingDirectory: ./aws
+
+      - name: Deploy DevOps Stack
+        uses: hashicorp/terraform-cdk-action@v4
+        with:
+          cdktfVersion: 0.20.7
+          terraformVersion: 1.8.3
+          mode: auto-approve-apply
+          stackName: widget-factory-devops
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          workingDirectory: ./aws
