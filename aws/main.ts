@@ -16,8 +16,9 @@ const accountStack = new AccountStack(app, `${organization}-account`, {
   githubOrg: githubOrg,
 });
 const devOpsStack = new DevOpsStack(app, `${organization}-devops`);
-
-new HowToCloudStack(app, "how-to-cloud");
+const deploymentStack = new DeploymentStack(app, `${organization}-deployment`, {
+  ecrUri: devOpsStack.ecr.repositoryUrl,
+});
 
 new S3Backend(accountStack, {
   bucket: backend,
@@ -33,6 +34,11 @@ new S3Backend(devOpsStack, {
   bucket: backend,
   key: "devops",
   workspaceKeyPrefix: "devops",
+});
+
+new S3Backend(deploymentStack, {
+  bucket: backend,
+  key: "deployment",
 });
 
 app.synth();

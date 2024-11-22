@@ -1,6 +1,7 @@
 import { DataAwsIamPolicy } from "@cdktf/provider-aws/lib/data-aws-iam-policy";
 import { DataAwsIamPolicyDocument } from "@cdktf/provider-aws/lib/data-aws-iam-policy-document";
 import { IamOpenidConnectProvider } from "@cdktf/provider-aws/lib/iam-openid-connect-provider";
+import { IamPolicy } from "@cdktf/provider-aws/lib/iam-policy";
 import { IamRole } from "@cdktf/provider-aws/lib/iam-role";
 import { IamRolePolicyAttachment } from "@cdktf/provider-aws/lib/iam-role-policy-attachment";
 import { Construct } from "constructs";
@@ -54,6 +55,56 @@ export class OIDCProvider extends Construct {
       assumeRolePolicy: assumePolicy.json,
     });
 
+    const denyItselfPolicyDocument = new DataAwsIamPolicyDocument(
+      scope,
+      `${name}-di-policy-doc`,
+      {
+        statement: [
+          {
+            effect: "Deny",
+            actions: ["iam:*"],
+            resources: [role.arn, oidcProvider.arn],
+          },
+        ],
+      }
+    );
+
+    const denyItselfPolicy = new IamPolicy(scope, `${name}-di-policy`, {
+      policy: denyItselfPolicyDocument.json,
+    });
+
+    const moreIamPolicyDocument = new DataAwsIamPolicyDocument(
+      scope,
+      `${name}-more-iam-policy-doc`,
+      {
+        statement: [
+          {
+            effect: "Allow",
+            actions: [
+              "iam:CreatePolicy",
+              "iam:CreatePolicyVersion",
+              "iam:DeletePolicy",
+              "iam:DeletePolicyVersion",
+              "iam:UpdatePolicy",
+              "iam:UpdatePolicyVersion",
+              "iam:CreateRole",
+              "iam:DeleteRole",
+              "iam:UpdateRole",
+              "iam:AttachRolePolicy",
+              "iam:DetachRolePolicy",
+              "iam:List*",
+              "iam:Get*",
+            ],
+            resources: ["*"],
+          },
+        ],
+      }
+    );
+
+    const moreIamPolicy = new IamPolicy(scope, `${name}-more-iam-policy`, {
+      policy: moreIamPolicyDocument.json,
+    });
+
     const policy = new DataAwsIamPolicy(scope, `${name}-trust-policy`, {
       name: "PowerUserAccess",
     });
@@ -61,6 +112,16 @@ export class OIDCProvider extends Construct {
     new IamRolePolicyAttachment(scope, `${name}-rpa`, {
       role: role.name,
       policyArn: policy.arn,
+    });
+
+    new IamRolePolicyAttachment(scope, `${name}-dipa`, {
+      role: role.name,
+      policyArn: denyItselfPolicy.arn,
+    });
+
+    new IamRolePolicyAttachment(scope, `${name}-miam`, {
+      role: role.name,
+      policyArn: moreIamPolicy.arn,
     });
   }
 }
