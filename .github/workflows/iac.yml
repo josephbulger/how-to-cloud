@@ -1,18 +1,39 @@
 name: Deploy Infrastructure
-on: push
+on:
+  push:
+    tags:
+      - "*"
+
 permissions:
   id-token: write
   contents: read
 jobs:
   Deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./aws
     steps:
       - name: Git clone the repository
         uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate module and provider bindings
+        run: npx cdktf-cli get
+
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::851725448247:role/widget-factory-account-oidc-trust-role20240516012044860200000001
+          role-to-assume: [[OIDC_ROLE_ARN]]
           role-session-name: githubsession
           aws-region: us-east-2
 
@@ -25,3 +46,28 @@ jobs:
           stackName: widget-factory-devops
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           workingDirectory: ./aws
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push
+        uses: docker/bake-action@v5
+        with:
+          push: true
+          workdir: examples/api
+          provenance: false
+        env:
+          IMAGE_URI: [[ECR_URL]]/api
+          IMAGE_TAG: ${{ github.ref_name }}
+
+      - name: Deploy Apps Stack
+        uses: hashicorp/terraform-cdk-action@v4
+        with:
+          cdktfVersion: 0.20.7
+          terraformVersion: 1.8.3
+          mode: auto-approve-apply
+          stackName: widget-factory-devops widget-factory-deployment
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          workingDirectory: ./aws
+          cdktfArgs: --var='tag=${{ github.ref_name }}'

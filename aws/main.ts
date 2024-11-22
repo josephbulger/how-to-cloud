@@ -1,8 +1,8 @@
 import { App, S3Backend } from "cdktf";
-import { HowToCloudStack } from "./stacks/howtocloud";
 import { RootStack } from "./stacks/root";
 import { AccountStack } from "./stacks/account";
 import { DevOpsStack } from "./stacks/devops";
+import { DeploymentStack } from "./stacks/deployment";
 
 const organization = "widget-factory";
 const githubOrg = "repo:widget-factory";
